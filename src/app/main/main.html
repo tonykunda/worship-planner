@@ -1,0 +1,141 @@
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Worship Planner</a>
+    </div>
+
+    <!-- <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Link</a></li>
+      </ul>
+    </div> -->
+  </div>
+</nav>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <button type="button" ng-if="vm.songChanged()" class="btn btn-sm btn-danger pull-right" name="button" ng-click="vm.saveSong(vm.selectedSong)"><i class="fa fa-floppy-o"></i></button>
+      <button type="button" class="btn btn-sm" name="button" ng-click="vm.newSong()">New Song</button>
+      <button type="button" class="btn btn-sm" name="button" ng-click="vm.clearSet()">Clear Set</button>
+      <button type="button" class="btn btn-sm" name="button" ng-click="vm.printChords()">Print Chords</button>
+      <button type="button" class="btn btn-sm" name="button" ng-click="vm.printLyrics()">Print Lyrics</button>
+      <button type="button" class="btn btn-sm" name="button" ng-click="vm.printCueSheet()">Print Cue Sheet</button>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-7">
+      <div class="form-group">
+        <label for="key">Search</label>
+        <input type="text" class="form-control" ng-model="vm.searchTerm" placeholder="Search...">
+      </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th ng-click="vm.orderKey = '-selected'">Selected</th>
+            <th ng-click="vm.orderKey = 'order'">Order</th>
+            <th ng-click="vm.orderKey = 'title'">Title</th>
+            <!-- <th>Lyric</th> -->
+            <th ng-click="vm.orderKey = 'key'">Key</th>
+            <th ng-click="vm.orderKey = 'tempo'">Tempo</th>
+            <th ng-click="vm.orderKey = '-placement'">Placement</th>
+            <th>Tools</th>
+          </tr>
+        </thead>
+        <tbody class="songlist">
+          <tr ng-repeat="song in vm.songs | filter:vm.searchTerm | orderBy:vm.orderKey" ng-click="vm.setSelected(song)">
+            <td><input type="checkbox" class="form-control" ng-model="song.selected" ng-change="vm.saveSong(song)"></td>
+            <td><input type="number" class="form-control" ng-model="song.order" ng-change="vm.saveSong(song)"></td>
+            <td>{{song.title}}</td>
+            <!-- <td>{{vm.firstLine(song.lyrics)}}</td> -->
+            <td>{{song.key}}</td>
+            <td>{{song.tempo}}</td>
+            <td>{{song.placement}}</td>
+            <td><button type="button" class="btn" ng-click="vm.removeSong(song)"><i class="fa fa-trash-o"></i></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-md-5">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="key">Song Title</label>
+            <input type="text" name="title" class="form-control" placeholder="Song Title" ng-model="vm.selectedSong.title">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="key">Author</label>
+            <input type="text" name="title" class="form-control" placeholder="Author" ng-model="vm.selectedSong.author">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="key">Key</label>
+            <select class="form-control" ng-options="key for key in vm.keys" ng-model="vm.selectedSong.key"></select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="key">Tempo</label>
+            <select class="form-control" ng-options="key for key in vm.tempos" ng-model="vm.selectedSong.tempo"></select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="key">Placement</label>
+            <select class="form-control" ng-options="key for key in vm.placements" ng-model="vm.selectedSong.placement"></select>
+          </div>
+        </div>
+      </div>
+      <uib-tabset active="active">
+        <uib-tab index="0" heading="Lyrics">
+          <h3>Lyrics</h3>
+          <textarea name="chords" ng-model="vm.selectedSong.lyrics" rows="30" style="width:100%"></textarea>
+        </uib-tab>
+        <uib-tab index="1" heading="Chords">
+          <h3>Chords <button type="button btn-xsall" class="btn btn-xs btn-warning pull-right" name="button" ng-click="vm.copyLyrics()">Copy Lyrics</button></h3>
+          <textarea name="lyrics" ng-model="vm.selectedSong.chords" rows="30" style="width:100%"></textarea>
+        </uib-tab>
+      </uib-tabset>
+    </div>
+  </div>
+
+
+</div>
