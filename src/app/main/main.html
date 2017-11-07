@@ -1,3 +1,5 @@
+
+
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -40,16 +42,32 @@
   </div>
 </nav>
 
+<div class="col-md-2 sidebar">
+  <h3>Sets <button type="button" class="btn btn-sm pull-right" name="button" ng-click="vm.clearSet()">New Set</button></h3>
+  <div>
+    <div class="input-group set-saver">
+      <input type="text" class="form-control" ng-model="vm.selectedSet.name" placeholder="Set Name...">
+      <span class="input-group-btn">
+        <button class="btn btn-secondary" type="button" ng-click="vm.saveSet(vm.selectedSet)"><i class="fa fa-floppy-o"></i></button>
+      </span>
+    </div>
+  </div>
+  <div class="list-group">
+    <a ng-repeat="set in vm.sets" ng-click="vm.selectSet(set)" class="list-group-item list-group-item-action">
+      {{set.name}}
+      <i class="fa fa-trash pull-right" ng-click="vm.deleteSet(set)"></i>
+    </a>
+  </div>
+</div>
 
-<div class="container">
+<div class="col-md-10 main-content">
   <div class="row">
     <div class="col-md-12">
       <button type="button" ng-if="vm.songChanged()" class="btn btn-sm btn-danger pull-right" name="button" ng-click="vm.saveSong(vm.selectedSong)"><i class="fa fa-floppy-o"></i></button>
-      <button type="button" class="btn btn-sm" name="button" ng-click="vm.newSong()">New Song</button>
-      <button type="button" class="btn btn-sm" name="button" ng-click="vm.clearSet()">Clear Set</button>
-      <button type="button" class="btn btn-sm" name="button" ng-click="vm.printChords()">Print Chords</button>
-      <button type="button" class="btn btn-sm" name="button" ng-click="vm.printLyrics()">Print Lyrics</button>
-      <button type="button" class="btn btn-sm" name="button" ng-click="vm.printCueSheet()">Print Cue Sheet</button>
+      <button type="button" class="btn btn-sm btn-primary" name="button" ng-click="vm.newSong()">New Song</button>
+      <button type="button" class="btn btn-sm btn-primary" name="button" ng-click="vm.printChords()">Print Chords</button>
+      <button type="button" class="btn btn-sm btn-primary" name="button" ng-click="vm.printLyrics()">Print Lyrics</button>
+      <button type="button" class="btn btn-sm btn-primary" name="button" ng-click="vm.printCueSheet()">Print Cue Sheet</button>
     </div>
   </div>
 
@@ -74,9 +92,9 @@
           </tr>
         </thead>
         <tbody class="songlist">
-          <tr ng-repeat="song in vm.songs | filter:vm.searchTerm | orderBy:vm.orderKey" ng-click="vm.setSelected(song)">
-            <td><input type="checkbox" class="form-control" ng-model="song.selected" ng-change="vm.saveSong(song)"></td>
-            <td><input type="number" class="form-control" ng-model="song.order" ng-change="vm.saveSong(song)"></td>
+          <tr ng-repeat="song in vm.songs | filter:vm.searchTerm | orderBy:vm.orderKey" ng-click="vm.setSelectedSong(song)">
+            <td><input type="checkbox" class="form-control" ng-model="song.selected" ng-change="vm.selectSong(song)"></td>
+            <td><input type="number" class="form-control" ng-model="song.order" ng-change="vm.orderSong(song)"></td>
             <td>{{song.title}}</td>
             <!-- <td>{{vm.firstLine(song.lyrics)}}</td> -->
             <td>{{song.key}}</td>
@@ -136,6 +154,4 @@
       </uib-tabset>
     </div>
   </div>
-
-
 </div>

@@ -57,6 +57,25 @@ tbody td, thead th {
     float: left;
 }
 
+.sidebar {
+  background-color: #eee;
+  align-items: stretch;
+  min-height: 95vh !important;
+}
+
+.navbar {
+  margin-bottom: 0px !important;
+}
+
+.main-content {
+  margin-top: 20px;
+}
+
+.set-saver {
+  margin-top: 15px !important;
+  margin-bottom: 10px !important;
+}
+
 /**
  *  Do not remove the comments below. It's the markers used by gulp-inject to inject
  *  all your sass files automatically

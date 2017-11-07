@@ -6,25 +6,39 @@
     .controller('MainController', MainController);
 
   /** @ngInject */
-  function MainController($firebaseArray, $filter, pdfMake, firebase, $firebaseAuth, $log) {
+  function MainController($firebaseArray, $filter, pdfMake, firebase, $firebaseAuth, $log, $timeout) {
     var vm = this;
+
+    vm.orderKey = "order"
 
     var auth = $firebaseAuth();
 
+    vm.clearSet = function() {
+      angular.forEach(vm.songs, function(song) {
+        song.order = null
+        song.selected = false
+        vm.songs.$save(song)
+      })
+      vm.newSet()
+    }
+
+    vm.getDataFromFirebase = function() {
+      var songsRef = firebase.database().ref().child("songs");
+      vm.songs = $firebaseArray(songsRef)
+      var setsRef = firebase.database().ref().child("sets");
+      vm.sets = $firebaseArray(setsRef)
+    }
 
     if (!auth.$getAuth()) {
       // login with Facebook
       auth.$signInWithPopup("google").then(function() {
-        var ref = firebase.database().ref().child("songs");
-        vm.songs = $firebaseArray(ref)
+        vm.getDataFromFirebase()
       }).catch(function() {
         $log.log("Not Logged In")
       });
     } else {
-      var ref = firebase.database().ref().child("songs");
-      vm.songs = $firebaseArray(ref)
+      vm.getDataFromFirebase()
     }
-
 
     pdfMake.fonts = {
       Roboto: {
@@ -63,7 +77,7 @@
       return lyrics.split("\n")[0]
     }
 
-    vm.setSelected = function(song) {
+    vm.setSelectedSong = function(song) {
       vm.unchangedSong = angular.copy(song)
       vm.selectedSong = song
     }
@@ -91,13 +105,6 @@
       vm.selectedSong = null
     }
 
-    vm.clearSet = function() {
-      angular.forEach(vm.songs, function(song) {
-        song.order = null
-        song.selected = false
-        vm.songs.$save(song)
-      })
-    }
 
     vm.selectedSongsChords = function() {
       var songs = []
@@ -257,6 +264,70 @@
         }
       };
       pdfMake.createPdf(docDefinition).open();
+    }
+
+    // sets
+    vm.newSet = function() {
+      vm.selectedSet = {
+        id: null,
+        name: null,
+        songs: []
+      }
+    }
+
+    vm.newSet()
+
+    vm.saveSet = function(set) {
+      if (!set.$id) {
+        vm.sets.$add(set)
+      } else {
+        vm.sets.$save(set)
+      }
+    }
+
+    vm.deleteSet = function(set) {
+      vm.sets.$remove(set)
+    }
+
+    vm.selectSet = function(set) {
+      vm.clearSet()
+      vm.selectedSet = set
+      angular.forEach(set.songs, function(setSong) {
+        angular.forEach(vm.songs, function(song) {
+          if (setSong.id == song.$id) {
+            song.selected = true
+            song.order = setSong.order
+            vm.songs.$save(song)
+          }
+        })
+      })
+    }
+
+    vm.selectSong = function(song) {
+      if (song.selected) {
+        vm.selectedSet.songs.push({id:song.$id, order:song.order})
+      } else {
+        angular.forEach(vm.selectedSet.songs, function(songFound, key) {
+          song.order = null
+          if (song.$id == songFound.id) {
+            vm.selectedSet.songs.splice(key, 1)
+          }
+        })
+      }
+      vm.unchangedSong = angular.copy(song)
+      vm.songs.$save(song)
+    }
+
+    vm.orderSong = function(song) {
+      if (song.selected) {
+        angular.forEach(vm.selectedSet.songs, function(songFound, key) {
+          if (song.$id == songFound.id) {
+            vm.selectedSet.songs.splice(key, 1, {id:song.$id, order:song.order})
+          }
+        })
+      }
+      vm.unchangedSong = angular.copy(song)
+      vm.songs.$save(song)
     }
 
   }
