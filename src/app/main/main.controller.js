@@ -22,11 +22,21 @@
       vm.newSet()
     }
 
+    // sets
+    vm.newSet = function () {
+      vm.selectedSet = {
+        id: null,
+        name: null,
+        songs: []
+      }
+    }
+
     vm.getDataFromFirebase = function() {
       var songsRef = firebase.database().ref().child("songs");
       vm.songs = $firebaseArray(songsRef)
       var setsRef = firebase.database().ref().child("sets");
       vm.sets = $firebaseArray(setsRef)
+      $timeout(vm.clearSet, 500)
     }
 
     if (!auth.$getAuth()) {
@@ -201,11 +211,10 @@
       var nextSongNeeded = 0
       angular.forEach(cols, function(col, key) {
         if (nextSongNeeded == key) {
-          results.push({columns:[cols[key],cols[key+1]? cols[key+1] : {}], pageBreak: key == cols.length - 1 ? false : 'after'})
+          results.push({ columns: [cols[key], cols[key + 1] ? cols[key + 1] : {}], pageBreak: key == cols.length - 1 || key == cols.length - 2  ? false : 'after'})
           nextSongNeeded = key + 2
         }
       })
-
       return results
     }
 
@@ -264,15 +273,6 @@
         }
       };
       pdfMake.createPdf(docDefinition).open();
-    }
-
-    // sets
-    vm.newSet = function() {
-      vm.selectedSet = {
-        id: null,
-        name: null,
-        songs: []
-      }
     }
 
     vm.newSet()
